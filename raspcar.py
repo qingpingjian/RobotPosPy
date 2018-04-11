@@ -116,12 +116,62 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
             time.sleep(0.1)
         return
 
+INTERVAL = 0.25
+
+class MyTCPHandler2(SocketServer.BaseRequestHandler):
+    def handle(self):
+        clientAddr = self.client_address[0]
+        print("Accepted connection from: %s" % (clientAddr))
+        GPIOreset()
+        print("Car Prepared and Wait for Commands")
+        isRunning = False
+        while True:
+            data = self.request.recv(256).strip()
+            if data != "":
+                self.request.send(data)
+                print("Receive command: %s and Reply back for log." % (data))
+                # Starts with '\0' and len(data), I don't know why now
+                # print("Data %s and length: %d" % (data, len(data)))
+                data = data[2:]
+                if not isRunning:
+                    # 希望能在开始运动的时候，轮子能尽快开始转动
+                    GPIOreset()
+                    isRunning = True
+
+                if data == COMMANDS[0]:
+                    forward()
+                    time.sleep(INTERVAL)
+                    GPIOreset()
+                elif data == COMMANDS[1]:
+                    back()
+                    time.sleep(INTERVAL)
+                    GPIOreset()
+                elif data == COMMANDS[2]:
+                    left()
+                    time.sleep(INTERVAL)
+                    GPIOreset()
+                elif data == COMMANDS[3]:
+                    right()
+                    time.sleep(INTERVAL)
+                    GPIOreset()
+                elif data == COMMANDS[4]:
+                    stop()
+                    if isRunning:
+                        isRunning = False
+                else:
+                    print("Unkown Command:%s" % (data))
+            else:
+                break
+            time.sleep(0.05)
+        return
+
 if __name__ == "__main__":
     # TCP server configuration
     HOST = "0.0.0.0"
     PORT = 50010
     # LISTEN = 5
-    tcpServer = SocketServer.TCPServer((HOST, PORT), MyTCPHandler)
+    # tcpServer = SocketServer.TCPServer((HOST, PORT), MyTCPHandler)
+    tcpServer = SocketServer.TCPServer((HOST, PORT), MyTCPHandler2)
     # Activate the server until interrupt the process with Ctrl-C
     try:
         print("Car Prepareing")
