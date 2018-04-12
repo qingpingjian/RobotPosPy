@@ -70,39 +70,41 @@ if __name__ == "__main__":
     rotDegreeListForUTurn = [r * -180.0 / math.pi for r in rotAngleListForUTurn]
 
     fig = plt.figure()
-    statSeparateAxe = fig.add_subplot(111)
+    statSeparateAxe = fig.add_subplot(311)
     statSeparateAxe.set_ylim(0.0, 3.0)
     statSeparateAxe.yaxis.set_major_locator(MultipleLocator(1.0))
     statSeparateAxe.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
     statSeparateAxe.yaxis.set_minor_locator(MultipleLocator(0.5))
-    # statSeparateAxe.set_xticks([]) # Hidden the x ticks
+    statSeparateAxe.set_xticks([]) # Hidden the x ticks
     statSeparateAxe.set_ylabel(u"加速度方差")
-    statSeparateAxe.set_xlabel(u"时间(s)")
-    statSeparateAxe.plot(timeListForStat, valueListForStat, color="red", lw=2, linestyle="--", label=u"静止")
-    statSeparateAxe.plot(timeListForWalk, valueListForWalk, color="blue", lw=2, linestyle="-", label=u"直线运动")
+    # statSeparateAxe.set_xlabel(u"时间(s)")
+    statSeparateAxe.plot(timeListForStat, valueListForStat, color="red", lw=3, linestyle="--", label=u"静止")
+    statSeparateAxe.plot(timeListForWalk, valueListForWalk, color="blue", lw=3, linestyle="-", label=u"直行")
     plt.legend(loc=2)
 
-    # walkSeparateAxe = fig.add_subplot(312)
-    # walkSeparateAxe.set_ylim(-2.0, 2.0)
-    # walkSeparateAxe.yaxis.set_major_locator(MultipleLocator(1.0))
-    # walkSeparateAxe.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
-    # walkSeparateAxe.yaxis.set_minor_locator(MultipleLocator(0.5))
-    # walkSeparateAxe.set_xticks([]) # Hidden the x ticks
-    # walkSeparateAxe.set_ylabel("$Rot. Rat.$")
-    # walkSeparateAxe.plot(timeListForNW, valueListForNW, color="red", lw=7, linestyle="-", label="Normal Walking")
-    # walkSeparateAxe.plot(timeListForTurns, valueListForTurns, color="blue", lw=7, linestyle="--", label="Turns")
-    # plt.legend(loc=4)
-    #
-    # turnSeparateAxe = fig.add_subplot(313)
-    # turnSeparateAxe.set_ylim(-50, 200)
-    # turnSeparateAxe.yaxis.set_major_locator(MultipleLocator(50))
-    # turnSeparateAxe.yaxis.set_major_formatter(FormatStrFormatter("%d"))
-    # turnSeparateAxe.yaxis.set_minor_locator(MultipleLocator(25))
+    walkSeparateAxe = fig.add_subplot(312)
+    walkSeparateAxe.set_ylim(-3.0, 2.0)
+    walkSeparateAxe.yaxis.set_major_locator(MultipleLocator(1.0))
+    walkSeparateAxe.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
+    walkSeparateAxe.yaxis.set_minor_locator(MultipleLocator(0.5))
+    walkSeparateAxe.set_xticks([]) # Hidden the x ticks
+    walkSeparateAxe.set_ylabel(u"角速度(rad/s)")
+    # walkSeparateAxe.set_xlabel(u"时间(s)")
+    walkSeparateAxe.plot(timeListForNW, valueListForNW, color="red", lw=3, linestyle="-", label=u"直行")
+    walkSeparateAxe.plot(timeListForTurns, valueListForTurns, color="blue", lw=3, linestyle="--", label=u"转弯")
+    plt.legend(loc="best")
+
+    turnSeparateAxe = fig.add_subplot(313)
+    turnSeparateAxe.set_ylim(-50, 200)
+    turnSeparateAxe.yaxis.set_major_locator(MultipleLocator(50))
+    turnSeparateAxe.yaxis.set_major_formatter(FormatStrFormatter("%d"))
+    turnSeparateAxe.yaxis.set_minor_locator(MultipleLocator(25))
     # turnSeparateAxe.set_xticks([]) # Hidden the x ticks
-    # turnSeparateAxe.set_ylabel("$Rot. Ang.$")
-    # turnSeparateAxe.plot(timeListForLeft, rotDegreeListForLeft, color="blue", lw=7, label="Left Turn")
-    # turnSeparateAxe.plot(timeListForUTurn, rotDegreeListForUTurn, color="red", lw=7, label="U-Turn", linestyle="--")
-    # plt.legend(loc=2)
+    turnSeparateAxe.set_ylabel(u"旋转角度(rad)")
+    turnSeparateAxe.set_xlabel(u"时间(s)")
+    turnSeparateAxe.plot(timeListForLeft, rotDegreeListForLeft, color="blue", lw=3, label=u"左转")
+    turnSeparateAxe.plot(timeListForUTurn, rotDegreeListForUTurn, color="red", lw=3, label=u"掉头", linestyle="--")
+    plt.legend(loc=2)
 
     plt.show()
 
