@@ -29,6 +29,17 @@ def varOfAcce(timeList, valueList, windowSize):
     varList = [np.var(valueList[i - midPos:i + midPos + 1]) for i in range(midPos, len(valueList) - midPos)]
     return votList, varList
 
+def motionSpeed(acceTimeList, acceValueList):
+    speedTimeList = []
+    speedValueList = []
+    for i in range(0, len(acceTimeList)-1):
+        deltaTime = acceTimeList[i+1] - acceTimeList[i]
+        speedTimeList.append(acceTimeList[i] + 0.5 * deltaTime)
+        speedValueList.append(0.5 * (acceValueList[i] + acceValueList[i+1]) * deltaTime)
+    return speedTimeList, speedValueList
+
+
+
 def rotationAngle(gyroTimeList, gyroValueList, normalize = True):
     """
     clockwise rotation return position values and keep rotation angle in {0, 2pi) based on normalize flag
