@@ -12,7 +12,7 @@ import pandas as pd
 
 TIMESTAMP_BASELINE = 1490000000000
 
-def loadAcceData(filePath, relativeTime = True, combineFlag = False):
+def loadAcceData(filePath, relativeTime = True):
     acceDF = pd.read_csv(filePath)
     acceInfo = acceDF.ix[:,['timestamp', 'acce_x', 'acce_y', 'acce_z']]
     acceTimeList = []
@@ -22,10 +22,7 @@ def loadAcceData(filePath, relativeTime = True, combineFlag = False):
         xAxis = acceRecord[1]
         yAxis = acceRecord[2]
         # zAxis = acceRecord[3]
-        if combineFlag:
-            acceValueList.append(math.sqrt(math.pow(xAxis, 2) + math.pow(yAxis, 2)))
-        else:
-            acceValueList.append((xAxis, yAxis))
+        acceValueList.append(xAxis)
     if relativeTime:
         acceTimeList = [(t - acceTimeList[0]) for t in acceTimeList]
     return acceTimeList, acceValueList

@@ -27,7 +27,7 @@ if __name__ == "__main__":
                       "./Examples/PatternDetect/20170622153925_gyro.csv")
 
     # Load accelerometer data from files
-    acceTimeList, acceValueList = loadAcceData(sensorFilePath[0], combineFlag = True)
+    acceTimeList, acceValueList = loadAcceData(sensorFilePath[0])
     windowSize = 7
     acceVotList, acceVarList = varOfAcce(acceTimeList, acceValueList, windowSize)
 

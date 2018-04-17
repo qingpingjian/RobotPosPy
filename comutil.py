@@ -7,9 +7,11 @@ Created on 2018/4/12 11:09
 @file: comutil.py.py
 @software: PyCharm Community Edition
 """
+import math
 import numpy as np
 
 from anglefunc import angleNormalize
+from dataloader import loadAcceData, loadGyroData
 
 def slidingWindowFilter(timeList, valueList, windowSize):
     midPos = (windowSize - 1) / 2
@@ -30,19 +32,22 @@ def varOfAcce(timeList, valueList, windowSize):
     return votList, varList
 
 def motionSpeed(acceTimeList, acceValueList):
-    speedTimeList = []
-    speedValueList = []
-    for i in range(0, len(acceTimeList)-1):
-        deltaTime = acceTimeList[i+1] - acceTimeList[i]
-        speedTimeList.append(acceTimeList[i] + 0.5 * deltaTime)
-        speedValueList.append(0.5 * (acceValueList[i] + acceValueList[i+1]) * deltaTime)
-    return speedTimeList, speedValueList
+    """
+    :param acceTimeList:
+    :param acceValueList:  We use the x axis of accelerometer to derivate the motion speed
+    :return:
+    """
+    acceAvgList = [acceValueList[0]]
+    acceAvgList.extend([(acceValueList[i - 1] + acceValueList[i]) / 2.0 for i in range(1, len(acceValueList))])
 
-
+    speedValueList = [0.0]
+    for j in range(1, len(acceAvgList)):
+        speedValueList.append((acceTimeList[j] - acceTimeList[j-1]) * acceAvgList[j] + speedValueList)
+    return acceTimeList, speedValueList
 
 def rotationAngle(gyroTimeList, gyroValueList, normalize = True):
     """
-    clockwise rotation return position values and keep rotation angle in {0, 2pi) based on normalize flag
+    clockwise rotation return position values and keep rotation angle in [0, 2pi) based on normalize flag
     :param gyroTimeList: Gyroscope data timestamp
     :param gyroValueList: Gyroscope data list
     :param normalize: normalize flag
@@ -51,11 +56,35 @@ def rotationAngle(gyroTimeList, gyroValueList, normalize = True):
     # Between two timestamps, we use the average value as the real rate.
     avgList = [gyroValueList[0]]
     avgList.extend([(gyroValueList[i - 1] + gyroValueList[i]) / 2.0 for i in range(1, len(gyroValueList))])
+
     integrationList = [0.0]
     for j in range(1, len(avgList)):
         integrationList.append((gyroTimeList[j] - gyroTimeList[j - 1]) * avgList[j] + integrationList[j - 1])
     # clockwise rotation return position values and keep rotation angle in {0, 2pi) based on circularData flag
-    return [angleNormalize(-1.0 * rot) if normalize else (-1.0 * rot) for rot in integrationList]
+    rotValueList = [angleNormalize(-1.0 * rot) if normalize else (-1.0 * rot) for rot in integrationList]
+    return gyroTimeList, rotValueList
+
+def agTimeAlign(acceTimeList, gyroTimeList):
+    aIndex = 0
+    acceIndexList = []
+    for gt in gyroTimeList:
+        for i in range(aIndex, len(acceTimeList)):
+            if math.fabs(acceTimeList[i] - gt) < 0.003:
+                acceIndexList.append(i)
+                aIndex = i + 1
+                break
+            elif acceTimeList[i] - gt > 0.01:
+                print (gt)
+                aIndex = i - 2
+                break
+    print ("gyro Leng %d vs. align Leng %d" % (len(gyroTimeList), len(acceIndexList)))
+    return acceIndexList
 
 if __name__ == "__main__":
+    sensorFilePath = ("./Examples/PDRTest/20170622153925_acce.csv",
+                      "./Examples/PDRTest/20170622153925_gyro.csv")
+    # Load accelerometer data from files
+    acceTimeList, acceValueList = loadAcceData(sensorFilePath[0], relativeTime=False)
+    gyroTimeList, gyroValueList = loadGyroData(sensorFilePath[1], relativeTime=False)
+    agTimeAlign(acceTimeList, gyroTimeList)
     print("Done.")
