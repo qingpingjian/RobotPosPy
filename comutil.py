@@ -42,7 +42,7 @@ def motionSpeed(acceTimeList, acceValueList):
 
     speedValueList = [0.0]
     for j in range(1, len(acceAvgList)):
-        speedValueList.append((acceTimeList[j] - acceTimeList[j-1]) * acceAvgList[j] + speedValueList)
+        speedValueList.append((acceTimeList[j] - acceTimeList[j-1]) * acceAvgList[j] + speedValueList[j-1])
     return acceTimeList, speedValueList
 
 def rotationAngle(gyroTimeList, gyroValueList, normalize = True):
@@ -65,20 +65,31 @@ def rotationAngle(gyroTimeList, gyroValueList, normalize = True):
     return gyroTimeList, rotValueList
 
 def agTimeAlign(acceTimeList, gyroTimeList):
-    aIndex = 0
-    acceIndexList = []
-    for gt in gyroTimeList:
-        for i in range(aIndex, len(acceTimeList)):
-            if math.fabs(acceTimeList[i] - gt) < 0.003:
-                acceIndexList.append(i)
-                aIndex = i + 1
+    a2gIndexList = []
+    gyroStartIndex = 0
+    for i in range(len(acceTimeList)):
+        # if the accelerometer time is smaller than the first gyroscope time,
+        # then the rotation angle should be initial angle.
+        if acceTimeList[i] < gyroTimeList[0] or math.fabs(acceTimeList[i] - gyroTimeList[0]) < 0.002:
+            a2gIndexList.append(0)
+            continue
+        # bigger than the last gyroscope time
+        if acceTimeList[i] > gyroTimeList[-1] or math.fabs(acceTimeList[i] - gyroTimeList[-1]) < 0.002:
+            a2gIndexList.append(len(gyroTimeList)-1)
+            continue
+        for j in range(gyroStartIndex, len(gyroTimeList)):
+            if math.fabs(acceTimeList[i] - gyroTimeList[j]) < 0.002:
+                a2gIndexList.append(j)
+                gyroStartIndex = j + 1
                 break
-            elif acceTimeList[i] - gt > 0.01:
-                print (gt)
-                aIndex = i - 2
+            baseTime = acceTimeList[i]
+            # Now, the gyroscope should be determined
+            if gyroTimeList[j] > baseTime:
+                targetIndex = j if gyroTimeList[j] - baseTime < baseTime - gyroTimeList[j-1] else j - 1
+                a2gIndexList.append(targetIndex)
+                gyroStartIndex = targetIndex + 1
                 break
-    print ("gyro Leng %d vs. align Leng %d" % (len(gyroTimeList), len(acceIndexList)))
-    return acceIndexList
+    return a2gIndexList
 
 if __name__ == "__main__":
     sensorFilePath = ("./Examples/PDRTest/20170622153925_acce.csv",

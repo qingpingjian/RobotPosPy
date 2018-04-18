@@ -23,12 +23,21 @@ matplotlib.rcParams['axes.unicode_minus'] = False # 用来正常显示负号
 def simplePDR(startPattern, acceTimeList, acceValueList, gyroTimeList, gyroValueList):
     speedTimeList, speedValueList = motionSpeed(acceTimeList, acceValueList)
     rotTimeList, rotValueList = rotationAngle(gyroTimeList, gyroValueList)
+    speedValueList = [s + startPattern[0] for s in speedValueList]
+    headingList = [angleNormalize(r + startPattern[1]) for r in rotValueList]
 
-    estLoc = [(startPattern[2], startPattern[3])]
-    for i in range(len(speedTimeList)):
+    # Put accelerometer time to align with gyroscope time
+    s2rIndexList = agTimeAlign(speedTimeList, rotTimeList)
 
-        pass
-    pass
+    estLocList = [(startPattern[2], startPattern[3])]
+    for i in range(1, len(speedTimeList)):
+        avgSpeed = 0.5 * (speedValueList[i] + speedValueList[i-1])
+        dist = avgSpeed * (speedTimeList[i] - speedTimeList[i-1])
+        heading = headingList[s2rIndexList[i]]
+        xLoc = estLocList[-1][0] + dist * math.sin(heading)
+        yLoc = estLocList[-1][1] + dist * math.cos(heading)
+        estLocList.append((xLoc, yLoc))
+    return estLocList
 
 if __name__ == "__main__":
     sensorFilePath = ("./Examples/PDRTest/20170622153925_acce.csv",
@@ -37,5 +46,7 @@ if __name__ == "__main__":
     # Load accelerometer data from files
     acceTimeList, acceValueList = loadAcceData(sensorFilePath[0], relativeTime=False)
     gyroTimeList, gyroValueList = loadGyroData(sensorFilePath[1], relativeTime=False)
+
+    estLocList = simplePDR(startPattern, acceTimeList, acceValueList, gyroTimeList, gyroValueList)
 
     print("Done.")
