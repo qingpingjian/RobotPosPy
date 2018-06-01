@@ -59,14 +59,15 @@ if __name__ == "__main__":
     timeListForLeft = gyroTimeList[1781:2281]
     gyroListForLeft = gyroValueList[1781:2281]
     timeListForLeft = [t - timeListForLeft[0] for t in timeListForLeft]
-    rotAngleListForLeft = rotationAngle(timeListForLeft, gyroListForLeft, normalize=False)
+    _, rotAngleListForLeft = rotationAngle(timeListForLeft, gyroListForLeft, normalize=False)
+    print rotAngleListForLeft,type(rotAngleListForLeft)
     rotDegreeListForLeft = [r * 180.0 / math.pi for r in rotAngleListForLeft]
 
     # Turn around
     timeListForUTurn = gyroTimeList[2581:3081]
     gyroListForUTurn = gyroValueList[2581:3081]
     timeListForUTurn = [t - timeListForUTurn[0] for t in timeListForUTurn]
-    rotAngleListForUTurn = rotationAngle(timeListForUTurn, gyroListForUTurn, normalize=False)
+    _, rotAngleListForUTurn = rotationAngle(timeListForUTurn, gyroListForUTurn, normalize=False)
     rotDegreeListForUTurn = [r * -180.0 / math.pi for r in rotAngleListForUTurn]
 
     fig = plt.figure()
