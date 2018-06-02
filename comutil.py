@@ -42,7 +42,8 @@ def motionSpeed(acceTimeList, acceValueList):
 
     speedValueList = [0.0]
     for j in range(1, len(acceAvgList)):
-        speedValueList.append((acceTimeList[j] - acceTimeList[j-1]) * acceAvgList[j] + speedValueList[j-1])
+        # TODO: 手机放到小车上之后会产生误差速度的累计误差怎么办？
+        speedValueList.append((acceTimeList[j] - acceTimeList[j-1]) * (acceAvgList[j] if math.fabs(acceAvgList[j]) > 0.1268 else 0.0) + speedValueList[j-1])
     return acceTimeList, speedValueList
 
 def rotationAngle(gyroTimeList, gyroValueList, normalize = True):
