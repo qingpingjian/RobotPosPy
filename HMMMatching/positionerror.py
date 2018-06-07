@@ -32,7 +32,7 @@ def showPosError():
     t1MatchErrList = t1MatchErrDF.values[:,0]
 
     t2pdrErrorFilePath = "./TrajectoryFour/20180603165643_ground_pdr_error.csv"
-    t2matchErrorFilePath = "./TrajectoryFour/20180603165643_ground_pdr_error.csv"
+    t2matchErrorFilePath = "./TrajectoryFour/20180603165643_ground_atmatch_error.csv"
     t2groundTruthFilePath = "./TrajectoryFour/20180603165643_ground.csv"
 
     t2DistDF = pd.read_csv(t2groundTruthFilePath)
@@ -45,31 +45,31 @@ def showPosError():
     # Plot the figures
     fig = plt.figure()
     t1Axes = fig.add_subplot(121)
-    t1Axes.set_xlabel(u"运动距离(米)")
-    t1Axes.set_ylabel(u"定位误差(米)")
+    t1Axes.set_xlabel(u"在"+"$T_1$" + u"上运动距离（米）")
+    t1Axes.set_ylabel(u"定位误差（米）")
     t1Axes.plot(t1DistList, t1PdrErrList, "b-", linewidth=2, label=u"航位推算")
     t1Axes.plot(t1DistList, t1MatchErrList, "r--", linewidth=2, label=u"本文提出的算法")
-    # t1Axes.set_xlim(0, 60)
-    # t1Axes.set_ylim(0.5, 1.1)
-    # t1Axes.xaxis.set_major_locator(MultipleLocator(10))
+    t1Axes.set_xlim(0, 200)
+    t1Axes.set_ylim(0, 8)
+    t1Axes.xaxis.set_major_locator(MultipleLocator(25))
     # t1Axes.xaxis.set_minor_locator(MultipleLocator(5))
-    # t1Axes.yaxis.set_major_locator(MultipleLocator(0.1))
-    # t1Axes.yaxis.set_minor_locator(MultipleLocator(0.05))
-    t1Axes.grid(True)
+    t1Axes.yaxis.set_major_locator(MultipleLocator(2))
+    t1Axes.yaxis.set_minor_locator(MultipleLocator(1))
+    t1Axes.grid(True, axis="y")
     t1Axes.legend(loc=2)
 
     t2Axes = fig.add_subplot(122)
-    t2Axes.set_xlabel(u"运动距离(米)")
-    t2Axes.set_ylabel(u"定位误差(米)")
+    t2Axes.set_xlabel(u"在"+"$T_2$" + u"上运动距离（米）")
+    t2Axes.set_ylabel(u"定位误差（米）")
     t2Axes.plot(t2DistList, t2PdrErrList, "b-", linewidth=2, label=u"航位推算")
     t2Axes.plot(t2DistList, t2MatchErrList, "r--", linewidth=2, label=u"本文提出的算法")
-    # t1Axes.set_xlim(0, 60)
-    # t1Axes.set_ylim(0.5, 1.1)
-    # t1Axes.xaxis.set_major_locator(MultipleLocator(10))
-    # t1Axes.xaxis.set_minor_locator(MultipleLocator(5))
-    # t1Axes.yaxis.set_major_locator(MultipleLocator(0.1))
-    # t1Axes.yaxis.set_minor_locator(MultipleLocator(0.05))
-    t2Axes.grid(True)
+    t2Axes.set_xlim(0, 200)
+    t2Axes.set_ylim(0, 20)
+    t2Axes.xaxis.set_major_locator(MultipleLocator(25))
+    # t2Axes.xaxis.set_minor_locator(MultipleLocator(10))
+    t2Axes.yaxis.set_major_locator(MultipleLocator(4))
+    t2Axes.yaxis.set_minor_locator(MultipleLocator(2))
+    t2Axes.grid(True, axis="y")
     t2Axes.legend(loc=2)
 
     plt.show()
